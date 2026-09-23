@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { services } from "../data/services";
+import { useAuth } from "../context/AuthContext";
+import { ReviewForm } from "../components/Reviews";
 
 const STATUS_CONFIG = {
   Confirmed: { color: "bg-emerald-100 text-[#0a7a53]", icon: "✅", step: 1 },
@@ -9,12 +11,29 @@ const STATUS_CONFIG = {
   Cancelled: { color: "bg-rose-100 text-rose-600",     icon: "❌", step: -1 },
 };
 
+function hasReviewed(bookingId) {
+  // scan every service's review list for this bookingId
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("reviews_")) {
+      const reviews = JSON.parse(localStorage.getItem(key) || "[]");
+      if (reviews.find((r) => r.bookingId === bookingId)) return true;
+    }
+  }
+  return false;
+}
+
 export default function MyBookings() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [bookings, setBookings] = useState(
     JSON.parse(localStorage.getItem("bookings") || "[]")
   );
   const [cancelledId, setCancelledId] = useState(null);
+  const [reviewingId, setReviewingId] = useState(null); // bookingId currently being reviewed
+  const [reviewedIds, setReviewedIds] = useState(() =>
+    bookings.filter((b) => hasReviewed(b.id)).map((b) => b.id)
+  );
 
   function cancelBooking(id) {
     const updated = bookings.map((b) =>
@@ -25,11 +44,15 @@ export default function MyBookings() {
     setCancelledId(id);
   }
 
+  function handleReviewDone(bookingId) {
+    setReviewedIds((prev) => [...prev, bookingId]);
+    setReviewingId(null);
+  }
+
   /* ── Empty state ── */
   if (bookings.length === 0) {
     return (
       <div className="bg-[#f2f6f4] min-h-screen pb-24">
-        {/* Header */}
         <div className="bg-[#0a7a53] text-white px-6 pt-8 pb-8 rounded-b-[2rem] shadow-sm">
           <div className="max-w-4xl mx-auto">
             <h1 className="text-white text-2xl sm:text-3xl font-extrabold tracking-tight">
@@ -38,8 +61,6 @@ export default function MyBookings() {
             <p className="text-emerald-100 text-sm mt-1 font-medium">Your cleaning history</p>
           </div>
         </div>
-
-        {/* Gap + Card */}
         <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-8 animate-fadeInUp">
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-emerald-900/5 text-center py-14">
             <div className="w-20 h-20 bg-emerald-50 text-[#0a7a53] rounded-full flex items-center justify-center mx-auto text-4xl mb-4">
@@ -64,7 +85,6 @@ export default function MyBookings() {
   /* ── Bookings list ── */
   return (
     <div className="bg-[#f2f6f4] min-h-screen pb-28">
-      {/* Header — normal padding, no extra pb for overlap */}
       <div className="bg-[#0a7a53] text-white px-6 pt-8 pb-8 rounded-b-[2rem] shadow-sm">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-white text-2xl sm:text-3xl font-extrabold tracking-tight">
@@ -73,8 +93,6 @@ export default function MyBookings() {
           <p className="text-emerald-100 text-sm mt-1 font-semibold tracking-wide">
             {bookings.length} booking{bookings.length !== 1 ? "s" : ""}
           </p>
-
-          {/* Status summary pills */}
           <div className="flex gap-2.5 mt-4 flex-wrap">
             {Object.entries(
               bookings.reduce((acc, b) => {
@@ -93,13 +111,15 @@ export default function MyBookings() {
         </div>
       </div>
 
-      {/* ── Gap between green box and cards ── */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-8 space-y-5 stagger">
         {bookings.map((booking) => {
           const service = services.find((s) => s.id === booking.serviceId);
           if (!service) return null;
           const config = STATUS_CONFIG[booking.status] || {};
           const justCancelled = cancelledId === booking.id;
+          const isCompleted = booking.status === "Completed";
+          const alreadyReviewed = reviewedIds.includes(booking.id);
+          const showingReviewForm = reviewingId === booking.id;
 
           return (
             <div
@@ -204,6 +224,46 @@ export default function MyBookings() {
                     {booking.address}
                   </p>
                 </div>
+
+                {/* ── Review prompt for completed bookings ── */}
+                {isCompleted && !showingReviewForm && (
+                  <div className="mb-4">
+                    {alreadyReviewed ? (
+                      <div className="flex items-center gap-2 bg-teal-50 border border-teal-100 rounded-2xl px-4 py-3">
+                        <span className="text-lg">⭐</span>
+                        <p className="text-xs font-semibold text-teal-700">
+                          Thanks! Your review has been submitted.
+                        </p>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => setReviewingId(booking.id)}
+                        className="w-full flex items-center justify-center gap-2 bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-800 font-bold text-xs py-3.5 rounded-2xl transition-colors"
+                      >
+                        ⭐ Rate &amp; Review this service
+                      </button>
+                    )}
+                  </div>
+                )}
+
+                {/* ── Inline review form ── */}
+                {isCompleted && showingReviewForm && (
+                  <div className="mb-4">
+                    <ReviewForm
+                      serviceId={booking.serviceId}
+                      serviceName={service.name}
+                      bookingId={booking.id}
+                      userName={booking.name || user?.name}
+                      onDone={() => handleReviewDone(booking.id)}
+                    />
+                    <button
+                      onClick={() => setReviewingId(null)}
+                      className="mt-2 w-full text-xs text-gray-400 hover:text-gray-600 font-semibold transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                )}
 
                 {/* Action Buttons */}
                 <div className="flex gap-2.5">

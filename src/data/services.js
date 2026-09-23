@@ -2,8 +2,6 @@ export const services = [
   {
     id: 1,
     name: "SparkleClean Pro",
-    rating: 4.8,
-    reviews: 124,
     price: 499,
     priceUnit: "per visit",
     availability: "Available Today",
@@ -17,8 +15,6 @@ export const services = [
   {
     id: 2,
     name: "FreshNest Services",
-    rating: 4.6,
-    reviews: 89,
     price: 399,
     priceUnit: "per visit",
     availability: "Available Tomorrow",
@@ -32,8 +28,6 @@ export const services = [
   {
     id: 3,
     name: "CleanSweep Experts",
-    rating: 4.9,
-    reviews: 210,
     price: 649,
     priceUnit: "per visit",
     availability: "Available Today",
@@ -47,8 +41,6 @@ export const services = [
   {
     id: 4,
     name: "QuickMop Home Care",
-    rating: 4.3,
-    reviews: 56,
     price: 299,
     priceUnit: "per visit",
     availability: "Available Today",
@@ -62,8 +54,6 @@ export const services = [
   {
     id: 5,
     name: "HomeBright Solutions",
-    rating: 4.7,
-    reviews: 143,
     price: 549,
     priceUnit: "per visit",
     availability: "Available Tomorrow",
@@ -77,8 +67,6 @@ export const services = [
   {
     id: 6,
     name: "GreenMaid Cleaning",
-    rating: 4.5,
-    reviews: 77,
     price: 449,
     priceUnit: "per visit",
     availability: "Available Today",
@@ -89,6 +77,29 @@ export const services = [
       "100% eco-friendly cleaning products. Great for homes with kids and pets. Safe, green, and thorough.",
     includes: ["Living Room", "Bedrooms", "Kitchen", "Bathrooms"],
   },
+];
+
+export const INITIAL_REVIEWS = [
+  // SparkleClean Pro (ID: 1)
+  { id: 101, serviceId: 1, name: "Ananya Sharma", rating: 5, comment: "Left my home spotless! Punctual and polite staff.", date: "2026-03-10" },
+  { id: 102, serviceId: 1, name: "Rahul Verma", rating: 5, comment: "Great attention to detail in the kitchen area.", date: "2026-03-14" },
+
+  // FreshNest Services (ID: 2)
+  { id: 201, serviceId: 2, name: "Priya Nair", rating: 4, comment: "Affordable and reliable. Took a bit longer than expected but good quality.", date: "2026-03-05" },
+  { id: 202, serviceId: 2, name: "Vikram Singh", rating: 5, comment: "Decent work for the price. Very professional.", date: "2026-03-18" },
+
+  // CleanSweep Experts (ID: 3)
+  { id: 301, serviceId: 3, name: "Aarav Gupta", rating: 5, comment: "Worth every penny. Deep cleaned appliances and windows perfectly.", date: "2026-02-28" },
+  { id: 302, serviceId: 3, name: "Sneha Patel", rating: 5, comment: "Top-tier service! Will book them again for sure.", date: "2026-03-12" },
+
+  // QuickMop Home Care (ID: 4)
+  { id: 401, serviceId: 4, name: "Rohan Das", rating: 4, comment: "Good maintenance clean for a quick weekend refresh.", date: "2026-03-01" },
+
+  // HomeBright Solutions (ID: 5)
+  { id: 501, serviceId: 5, name: "Kavita Rao", rating: 5, comment: "Everything smelled clean and sanitized without overwhelming chemical odors.", date: "2026-03-08" },
+
+  // GreenMaid Cleaning (ID: 6)
+  { id: 601, serviceId: 6, name: "Meera Joshi", rating: 5, comment: "Loved that they used eco-friendly products. Safe for my pets!", date: "2026-03-15" }
 ];
 
 export const timeSlots = [

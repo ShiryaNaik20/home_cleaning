@@ -1,10 +1,17 @@
+import { useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { services } from "../data/services";
+import { services, INITIAL_REVIEWS } from "../data/services";
+import { ReviewList } from "../components/Reviews";
 
 export default function ServiceDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const reviewsRef = useRef(null); // Ref to scroll down to reviews
+
   const service = services.find((s) => s.id === Number(id));
+
+  // Initialize review list state with seeds from services file
+  const [allReviews, setAllReviews] = useState(INITIAL_REVIEWS);
 
   if (!service)
     return (
@@ -19,6 +26,24 @@ export default function ServiceDetail() {
         </button>
       </div>
     );
+
+  // Dynamic calculations from actual reviews
+  const serviceReviews = allReviews.filter((r) => r.serviceId === service.id);
+  const reviewCount = serviceReviews.length;
+  
+  const avgRating =
+    reviewCount > 0
+      ? (serviceReviews.reduce((acc, curr) => acc + curr.rating, 0) / reviewCount).toFixed(1)
+      : "0.0";
+
+  const handleAddReview = (newReview) => {
+    setAllReviews((prev) => [newReview, ...prev]);
+  };
+
+  // Scroll function when clicking the rating badge
+  const scrollToReviews = () => {
+    reviewsRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <div className="bg-[#f2f6f4] min-h-screen pb-36">
@@ -43,11 +68,19 @@ export default function ServiceDetail() {
                 </span>
               )}
             </div>
-            <div className="flex items-center justify-center gap-1.5 mt-2">
+
+            {/* Clickable Dynamic Rating & Review Count Button */}
+            <button
+              onClick={scrollToReviews}
+              className="inline-flex items-center justify-center gap-1.5 mt-2.5 px-3.5 py-1.5 rounded-full bg-white/10 hover:bg-white/20 active:scale-95 transition-all cursor-pointer border border-white/10"
+              title="Click to view reviews"
+            >
               <span className="text-amber-300 text-base">★</span>
-              <span className="font-bold text-white text-sm">{service.rating || "4.8"}</span>
-              <span className="text-emerald-100 text-xs font-medium">({service.reviews || 0} reviews)</span>
-            </div>
+              <span className="font-bold text-white text-sm">{avgRating}</span>
+              <span className="text-emerald-100 text-xs font-medium">
+                ({reviewCount} {reviewCount === 1 ? "review" : "reviews"})
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -77,9 +110,9 @@ export default function ServiceDetail() {
 
         {/* About Service Card */}
         <div className="bg-white rounded-3xl p-5 shadow-sm border border-emerald-900/5 animate-fadeInUp">
-  <h2 className="font-bold text-gray-800 mb-2 flex items-center gap-2 text-base">
-    <span className="w-1.5 h-4 bg-[#0a7a53] rounded-full inline-block" />
-    About Service
+          <h2 className="font-bold text-gray-800 mb-2 flex items-center gap-2 text-base">
+            <span className="w-1.5 h-4 bg-[#0a7a53] rounded-full inline-block" />
+            About Service
           </h2>
           <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
             {service.description || "Professional service provided by background-verified experts."}
@@ -127,6 +160,15 @@ export default function ServiceDetail() {
               </div>
             ))}
           </div>
+        </div>
+
+        {/* Customer Reviews List & Form with Scroll Target Ref */}
+        <div ref={reviewsRef}>
+          <ReviewList
+            serviceId={service.id}
+            reviews={serviceReviews}
+            onAddReview={handleAddReview}
+          />
         </div>
       </div>
 

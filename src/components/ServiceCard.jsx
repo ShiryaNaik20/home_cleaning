@@ -1,7 +1,26 @@
 import { useNavigate } from "react-router-dom";
+import { INITIAL_REVIEWS } from "../data/services";
 
 export default function ServiceCard({ service }) {
   const navigate = useNavigate();
+
+  // Helper to calculate dynamic rating and total reviews from localStorage / seed data
+  const getReviewStats = () => {
+    const saved = localStorage.getItem(`reviews_${service.id}`);
+    const reviews = saved
+      ? JSON.parse(saved)
+      : INITIAL_REVIEWS.filter((r) => r.serviceId === Number(service.id));
+
+    const total = reviews.length;
+    const avg =
+      total > 0
+        ? (reviews.reduce((acc, curr) => acc + (curr.rating || 0), 0) / total).toFixed(1)
+        : "0.0";
+
+    return { avg, total };
+  };
+
+  const { avg, total } = getReviewStats();
 
   return (
     <div
@@ -37,16 +56,16 @@ export default function ServiceCard({ service }) {
             {service.name}
           </h3>
 
-          {/* Rating Badge */}
+          {/* Dynamic Rating Badge */}
           <div className="flex items-center gap-1 bg-amber-50 text-amber-700 text-xs px-2.5 py-1 rounded-full font-bold flex-shrink-0">
             <span className="text-amber-400">★</span>
-            <span>{service.rating || "4.8"}</span>
+            <span>{avg}</span>
           </div>
         </div>
 
-        {/* Details / Reviews Sub-line */}
+        {/* Details / Dynamic Reviews Sub-line */}
         <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
-          <span>{service.reviews ? `${service.reviews} reviews` : "Verified Provider"}</span>
+          <span>{total > 0 ? `${total} ${total === 1 ? "review" : "reviews"}` : "Verified Provider"}</span>
           {service.experience && (
             <>
               <span className="text-gray-300">•</span>
