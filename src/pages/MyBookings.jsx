@@ -4,9 +4,9 @@ import { services } from "../data/services";
 
 const STATUS_CONFIG = {
   Confirmed: { color: "bg-emerald-100 text-[#0a7a53]", icon: "✅", step: 1 },
-  Pending:   { color: "bg-amber-100 text-amber-700", icon: "⏳", step: 0 },
-  Completed: { color: "bg-teal-100 text-teal-800", icon: "🎉", step: 2 },
-  Cancelled: { color: "bg-rose-100 text-rose-600", icon: "❌", step: -1 },
+  Pending:   { color: "bg-amber-100 text-amber-700",   icon: "⏳", step: 0 },
+  Completed: { color: "bg-teal-100 text-teal-800",     icon: "🎉", step: 2 },
+  Cancelled: { color: "bg-rose-100 text-rose-600",     icon: "❌", step: -1 },
 };
 
 export default function MyBookings() {
@@ -25,25 +25,28 @@ export default function MyBookings() {
     setCancelledId(id);
   }
 
+  /* ── Empty state ── */
   if (bookings.length === 0) {
     return (
       <div className="bg-[#f2f6f4] min-h-screen pb-24">
         {/* Header */}
-        <div className="bg-[#0a7a53] text-white px-6 pt-8 pb-16 rounded-b-[2rem] shadow-sm">
+        <div className="bg-[#0a7a53] text-white px-6 pt-8 pb-8 rounded-b-[2rem] shadow-sm">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-white text-2xl sm:text-3xl font-extrabold tracking-tight">My Bookings</h1>
+            <h1 className="text-white text-2xl sm:text-3xl font-extrabold tracking-tight">
+              My Bookings
+            </h1>
             <p className="text-emerald-100 text-sm mt-1 font-medium">Your cleaning history</p>
           </div>
         </div>
 
-        {/* Card Container */}
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-8">
+        {/* Gap + Card */}
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-8 animate-fadeInUp">
           <div className="bg-white rounded-3xl p-8 shadow-sm border border-emerald-900/5 text-center py-14">
             <div className="w-20 h-20 bg-emerald-50 text-[#0a7a53] rounded-full flex items-center justify-center mx-auto text-4xl mb-4">
               🗓️
             </div>
             <h2 className="text-xl font-bold text-gray-800">No bookings yet</h2>
-            <p className="text-sm text-gray-500 mt-1 mb-6 max-w-xs mx-auto">
+            <p className="text-sm text-gray-500 mt-1 mb-6 max-w-xs mx-auto font-[Poppins]">
               Book your first cleaning session and it'll show up here.
             </p>
             <button
@@ -58,17 +61,20 @@ export default function MyBookings() {
     );
   }
 
+  /* ── Bookings list ── */
   return (
-    <div className="bg-[#f2f6f4] min-h-screen pb-24">
-      {/* Header with sufficient bottom padding */}
-      <div className="bg-[#0a7a53] text-white px-6 pt-8 pb-16 rounded-b-[2rem] shadow-sm">
+    <div className="bg-[#f2f6f4] min-h-screen pb-28">
+      {/* Header — normal padding, no extra pb for overlap */}
+      <div className="bg-[#0a7a53] text-white px-6 pt-8 pb-8 rounded-b-[2rem] shadow-sm">
         <div className="max-w-4xl mx-auto">
-          <h1 className="text-white text-2xl sm:text-3xl font-extrabold tracking-tight">My Bookings</h1>
+          <h1 className="text-white text-2xl sm:text-3xl font-extrabold tracking-tight">
+            My Bookings
+          </h1>
           <p className="text-emerald-100 text-sm mt-1 font-semibold tracking-wide">
             {bookings.length} booking{bookings.length !== 1 ? "s" : ""}
           </p>
 
-          {/* High-contrast summary pills */}
+          {/* Status summary pills */}
           <div className="flex gap-2.5 mt-4 flex-wrap">
             {Object.entries(
               bookings.reduce((acc, b) => {
@@ -87,8 +93,8 @@ export default function MyBookings() {
         </div>
       </div>
 
-      {/* Main Content with subtle -mt offset */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 -mt-8 space-y-4">
+      {/* ── Gap between green box and cards ── */}
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-8 space-y-5 stagger">
         {bookings.map((booking) => {
           const service = services.find((s) => s.id === booking.serviceId);
           if (!service) return null;
@@ -98,7 +104,7 @@ export default function MyBookings() {
           return (
             <div
               key={booking.id}
-              className="bg-white rounded-3xl overflow-hidden shadow-sm border border-emerald-900/5 transition-all"
+              className="bg-white rounded-3xl overflow-hidden shadow-sm border border-emerald-900/5 transition-all hover:shadow-md animate-fadeInUp"
             >
               {/* Status color strip */}
               <div
@@ -113,19 +119,23 @@ export default function MyBookings() {
                 }`}
               />
 
-              <div className="p-6">
+              <div className="p-5 sm:p-6">
                 {/* Header Row */}
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-2xl border border-emerald-100/50">
+                    <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-2xl border border-emerald-100/50 flex-shrink-0">
                       {service.emoji}
                     </div>
                     <div>
-                      <p className="font-bold text-gray-900 text-base">{service.name}</p>
-                      <p className="text-xs text-gray-400 font-mono">#{booking.id.toString().slice(-6)}</p>
+                      <p className="font-bold text-gray-900 text-base leading-tight">
+                        {service.name}
+                      </p>
+                      <p className="text-xs text-gray-400 font-mono mt-0.5">
+                        #{booking.id.toString().slice(-6)}
+                      </p>
                     </div>
                   </div>
-                  <span className={`text-xs px-3 py-1.5 rounded-full font-bold ${config.color}`}>
+                  <span className={`text-xs px-3 py-1.5 rounded-full font-bold flex-shrink-0 ${config.color}`}>
                     {config.icon} {booking.status}
                   </span>
                 </div>
@@ -139,7 +149,7 @@ export default function MyBookings() {
                         return (
                           <div key={step} className="flex items-center flex-1">
                             <div
-                              className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${
+                              className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 transition-colors ${
                                 active
                                   ? "bg-[#0a7a53] text-white shadow-sm"
                                   : "bg-gray-200 text-gray-400"
@@ -149,7 +159,7 @@ export default function MyBookings() {
                             </div>
                             {i < 2 && (
                               <div
-                                className={`flex-1 h-1 mx-2 rounded-full transition-colors ${
+                                className={`flex-1 h-1.5 mx-2 rounded-full transition-colors ${
                                   i < config.step ? "bg-[#0a7a53]" : "bg-gray-200"
                                 }`}
                               />
@@ -158,9 +168,9 @@ export default function MyBookings() {
                         );
                       })}
                     </div>
-                    <div className="flex justify-between mt-2">
+                    <div className="flex justify-between mt-2.5 px-0.5">
                       {["Pending", "Confirmed", "Completed"].map((s) => (
-                        <span key={s} className="text-[11px] font-bold text-gray-500">
+                        <span key={s} className="text-[11px] font-semibold text-gray-500">
                           {s}
                         </span>
                       ))}
@@ -168,31 +178,35 @@ export default function MyBookings() {
                   </div>
                 )}
 
-                {/* Information Grid */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {/* Info Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-2.5">
                   {[
-                    ["📅", "Date", booking.date],
-                    ["🕐", "Time", booking.timeSlot?.split("–")[0]?.trim()],
-                    ["👤", "Name", booking.name],
-                    ["💰", "Amount", `₹${service.price}`],
+                    ["📅", "DATE",   booking.date],
+                    ["🕐", "TIME",   booking.timeSlot?.split("–")[0]?.trim()],
+                    ["👤", "NAME",   booking.name],
+                    ["💰", "AMOUNT", `₹${service.price}`],
                   ].map(([icon, label, val]) => (
                     <div key={label} className="bg-gray-50 rounded-2xl p-3 border border-gray-100">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                      <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-1">
                         {icon} {label}
                       </p>
-                      <p className="text-xs font-bold text-gray-800 mt-0.5 truncate">{val}</p>
+                      <p className="text-xs font-bold text-gray-800 truncate">{val}</p>
                     </div>
                   ))}
                 </div>
 
                 {/* Address */}
-                <div className="bg-gray-50 rounded-2xl p-3.5 mt-2.5 border border-gray-100">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">📍 Address</p>
-                  <p className="text-xs font-semibold text-gray-700 mt-0.5 leading-snug">{booking.address}</p>
+                <div className="bg-gray-50 rounded-2xl p-3.5 border border-gray-100 mb-5">
+                  <p className="text-[10px] font-bold text-gray-400 tracking-wider mb-1">
+                    📍 ADDRESS
+                  </p>
+                  <p className="text-xs font-semibold text-gray-700 leading-snug">
+                    {booking.address}
+                  </p>
                 </div>
 
-                {/* Actions */}
-                <div className="flex gap-2.5 mt-5">
+                {/* Action Buttons */}
+                <div className="flex gap-2.5">
                   {booking.status === "Confirmed" && (
                     <button
                       onClick={() => cancelBooking(booking.id)}
@@ -214,7 +228,7 @@ export default function MyBookings() {
                 </div>
 
                 {justCancelled && (
-                  <div className="mt-3 bg-amber-50 border border-amber-200/60 rounded-2xl p-3 text-center">
+                  <div className="mt-3 bg-amber-50 border border-amber-200/60 rounded-2xl p-3 text-center animate-fadeIn">
                     <p className="text-xs text-amber-800 font-semibold">
                       Booking cancelled. We hope to see you again! 👋
                     </p>

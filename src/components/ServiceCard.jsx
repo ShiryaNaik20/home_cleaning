@@ -6,7 +6,7 @@ export default function ServiceCard({ service }) {
   return (
     <div
       onClick={() => navigate(`/service/${service.id}`)}
-      className="bg-white rounded-3xl p-4 border border-emerald-900/5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col sm:flex-row gap-4 items-start sm:items-center"
+      className="bg-white rounded-3xl p-4 border border-emerald-900/5 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col sm:flex-row gap-4 items-start sm:items-center animate-fadeInUp"
     >
       {/* Service Image / Emoji Avatar Container */}
       <div className="relative w-full sm:w-28 h-28 rounded-2xl bg-[#e6f4ef] flex items-center justify-center flex-shrink-0 overflow-hidden">

@@ -23,7 +23,7 @@ export default function ServiceDetail() {
   return (
     <div className="bg-[#f2f6f4] min-h-screen pb-36">
       {/* Hero Header */}
-      <div className="bg-[#0a7a53] text-white px-4 pt-6 pb-12 rounded-b-[2.5rem] shadow-md relative">
+      <div className="bg-[#0a7a53] text-white px-4 pt-6 pb-8 rounded-b-[2.5rem] shadow-md relative">
         <div className="max-w-3xl mx-auto">
           <button
             onClick={() => navigate(-1)}
@@ -53,9 +53,9 @@ export default function ServiceDetail() {
       </div>
 
       {/* Main Content Container */}
-      <div className="max-w-3xl mx-auto px-4 -mt-6 space-y-4">
+      <div className="max-w-3xl mx-auto px-4 mt-8 space-y-4">
         {/* Stats Cards */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-3 stagger">
           {[
             { value: `₹${service.price}`, label: service.priceUnit || "Per Visit", color: "text-[#0a7a53]" },
             { value: service.experience || "5+ Yrs", label: "Experience", color: "text-gray-800" },
@@ -67,7 +67,7 @@ export default function ServiceDetail() {
           ].map(({ value, label, color }) => (
             <div
               key={label}
-              className="bg-white rounded-2xl p-3 text-center shadow-sm border border-emerald-900/5 hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl p-3 text-center shadow-sm border border-emerald-900/5 hover:shadow-md transition-shadow animate-fadeInUp"
             >
               <p className={`font-bold text-sm sm:text-base ${color}`}>{value}</p>
               <p className="text-gray-400 text-[11px] mt-0.5 font-medium">{label}</p>
@@ -76,10 +76,10 @@ export default function ServiceDetail() {
         </div>
 
         {/* About Service Card */}
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-emerald-900/5">
-          <h2 className="font-bold text-gray-800 mb-2 flex items-center gap-2 text-base">
-            <span className="w-1.5 h-4 bg-[#0a7a53] rounded-full inline-block" />
-            About Service
+        <div className="bg-white rounded-3xl p-5 shadow-sm border border-emerald-900/5 animate-fadeInUp">
+  <h2 className="font-bold text-gray-800 mb-2 flex items-center gap-2 text-base">
+    <span className="w-1.5 h-4 bg-[#0a7a53] rounded-full inline-block" />
+    About Service
           </h2>
           <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
             {service.description || "Professional service provided by background-verified experts."}

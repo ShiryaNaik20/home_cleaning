@@ -6,16 +6,13 @@ import { services } from "../data/services";
 const STATUS_ORDER = ["Pending", "Confirmed", "Completed", "Cancelled"];
 
 const STATUS_CONFIG = {
-  Pending:   { color: "bg-yellow-100 text-yellow-700", icon: "⏳" },
-  Confirmed: { color: "bg-blue-100 text-blue-700",   icon: "✅" },
-  Completed: { color: "bg-green-100 text-green-700", icon: "🎉" },
-  Cancelled: { color: "bg-red-100 text-red-500",     icon: "❌" },
+  Pending:   { color: "bg-amber-100 text-amber-700",   bar: "bg-amber-400",   icon: "⏳" },
+  Confirmed: { color: "bg-[#e6f4ef] text-[#0a7a53]",  bar: "bg-[#0a7a53]",   icon: "✅" },
+  Completed: { color: "bg-teal-100 text-teal-700",     bar: "bg-teal-500",    icon: "🎉" },
+  Cancelled: { color: "bg-rose-100 text-rose-600",     bar: "bg-rose-500",    icon: "❌" },
 };
 
-const NEXT_STATUS = {
-  Pending:   "Confirmed",
-  Confirmed: "Completed",
-};
+const NEXT_STATUS = { Pending: "Confirmed", Confirmed: "Completed" };
 
 export default function Admin() {
   const { user } = useAuth();
@@ -28,30 +25,31 @@ export default function Admin() {
 
   if (!user || user.role !== "admin") {
     return (
-      <div className="max-w-md mx-auto px-4 py-16 text-center">
-        <p className="text-4xl mb-3">🔒</p>
-        <h2 className="text-lg font-bold text-gray-800">Access Denied</h2>
-        <p className="text-sm text-gray-500 mt-1">You need admin access to view this page.</p>
-        <button onClick={() => navigate("/login")} className="mt-5 bg-blue-600 text-white px-6 py-2.5 rounded-xl text-sm font-semibold">
-          Sign In as Admin
-        </button>
+      <div className="bg-[#f2f6f4] min-h-screen flex items-center justify-center px-4">
+        <div className="bg-white rounded-3xl p-10 text-center shadow-sm border border-emerald-900/5 max-w-sm w-full animate-scaleIn">
+          <p className="text-5xl mb-3">🔒</p>
+          <h2 className="text-lg font-bold text-gray-800">Access Denied</h2>
+          <p className="text-sm text-gray-500 mt-1">You need admin access to view this page.</p>
+          <button
+            onClick={() => navigate("/login")}
+            className="mt-5 bg-[#0a7a53] text-white px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-[#086343] transition-all"
+          >
+            Sign In as Admin
+          </button>
+        </div>
       </div>
     );
   }
 
   function updateStatus(id, newStatus) {
-    const updated = bookings.map((b) =>
-      b.id === id ? { ...b, status: newStatus } : b
-    );
+    const updated = bookings.map((b) => b.id === id ? { ...b, status: newStatus } : b);
     setBookings(updated);
     localStorage.setItem("bookings", JSON.stringify(updated));
-    showToast(`Booking marked as ${newStatus} ✅`);
+    showToast(`Marked as ${newStatus} ✅`);
   }
 
   function cancelBooking(id) {
-    const updated = bookings.map((b) =>
-      b.id === id ? { ...b, status: "Cancelled" } : b
-    );
+    const updated = bookings.map((b) => b.id === id ? { ...b, status: "Cancelled" } : b);
     setBookings(updated);
     localStorage.setItem("bookings", JSON.stringify(updated));
     showToast("Booking cancelled");
@@ -62,99 +60,99 @@ export default function Admin() {
     setTimeout(() => setToast(null), 2500);
   }
 
-  // Summary counts
   const counts = bookings.reduce((acc, b) => {
     acc[b.status] = (acc[b.status] || 0) + 1;
     return acc;
   }, {});
 
-  const filtered = filterStatus === "All"
-    ? bookings
-    : bookings.filter((b) => b.status === filterStatus);
+  const totalRevenue = bookings
+    .filter((b) => b.status !== "Cancelled")
+    .reduce((sum, b) => {
+      const svc = services.find((s) => s.id === b.serviceId);
+      return sum + (svc?.price || 0);
+    }, 0);
+
+  const filtered = filterStatus === "All" ? bookings : bookings.filter((b) => b.status === filterStatus);
 
   return (
-    <div className="max-w-md mx-auto pb-24">
+    <div className="bg-[#f2f6f4] min-h-screen pb-24">
       {/* Toast */}
       {toast && (
-        <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-xs font-medium px-4 py-2.5 rounded-full shadow-lg">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-gray-900 text-white text-xs font-semibold px-5 py-2.5 rounded-full shadow-lg animate-slideDown">
           {toast}
         </div>
       )}
 
-      {/* Header */}
-      <div className="bg-gradient-to-br from-indigo-600 to-purple-700 px-4 pt-5 pb-8">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <p className="text-indigo-200 text-xs font-medium">Operations Panel</p>
-            <h1 className="text-white text-xl font-bold">Admin Dashboard</h1>
-          </div>
-          <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-xl">
-            🛡️
-          </div>
-        </div>
-
-        {/* Summary Cards */}
-        <div className="grid grid-cols-4 gap-2">
-          {[
-            { status: "Pending", icon: "⏳", color: "bg-yellow-400" },
-            { status: "Confirmed", icon: "✅", color: "bg-blue-400" },
-            { status: "Completed", icon: "🎉", color: "bg-green-400" },
-            { status: "Cancelled", icon: "❌", color: "bg-red-400" },
-          ].map(({ status, icon, color }) => (
-            <div key={status} className="bg-white/15 rounded-xl p-2.5 text-center">
-              <p className="text-white font-bold text-lg">{counts[status] || 0}</p>
-              <p className="text-white/70 text-xs mt-0.5">{status}</p>
+      {/* Header — emerald with amber admin badge */}
+      <div className="bg-[#0a7a53] px-4 pt-6 pb-8 rounded-b-[2.5rem] shadow-md">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex items-center justify-between mb-5">
+            <div className="animate-fadeInUp">
+              <p className="text-emerald-200 text-xs font-semibold">Operations Panel</p>
+              <h1 className="text-white text-2xl sm:text-3xl font-bold mt-0.5">Admin Dashboard</h1>
             </div>
-          ))}
+            <div className="w-12 h-12 bg-amber-400 rounded-2xl flex items-center justify-center text-2xl shadow-md animate-checkPop">
+              🛡️
+            </div>
+          </div>
+
+          {/* Summary Cards — 2 col on mobile, 4 col on sm+ */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 stagger">
+            {[
+              { status: "Pending",   icon: "⏳", accent: "text-amber-300" },
+              { status: "Confirmed", icon: "✅", accent: "text-emerald-200" },
+              { status: "Completed", icon: "🎉", accent: "text-teal-200" },
+              { status: "Cancelled", icon: "❌", accent: "text-rose-300" },
+            ].map(({ status, icon, accent }) => (
+              <div key={status} className="bg-white/15 backdrop-blur-sm rounded-2xl p-3.5 text-center animate-fadeInUp border border-white/10">
+                <p className={`text-xl font-extrabold text-white`}>{counts[status] || 0}</p>
+                <p className={`text-xs mt-0.5 font-medium ${accent}`}>{icon} {status}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
-      <div className="px-4 mt-4">
-        {/* Total revenue */}
-        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-50 mb-4 flex items-center justify-between">
-          <div>
-            <p className="text-xs text-gray-400">Total Revenue</p>
-            <p className="text-xl font-bold text-gray-900 mt-0.5">
-              ₹{bookings
-                .filter((b) => b.status !== "Cancelled")
-                .reduce((sum, b) => {
-                  const svc = services.find((s) => s.id === b.serviceId);
-                  return sum + (svc?.price || 0);
-                }, 0)
-                .toLocaleString()}
-            </p>
+      {/* Main Content */}
+      <div className="max-w-5xl mx-auto px-4 mt-8 space-y-4">
+
+        {/* Revenue + Bookings row */}
+        <div className="grid grid-cols-2 gap-3 animate-fadeInUp">
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-emerald-900/5">
+            <p className="text-xs text-gray-400 font-medium">Total Revenue</p>
+            <p className="text-xl font-extrabold text-[#0a7a53] mt-0.5">₹{totalRevenue.toLocaleString()}</p>
           </div>
-          <div className="text-right">
-            <p className="text-xs text-gray-400">Total Bookings</p>
-            <p className="text-xl font-bold text-gray-900 mt-0.5">{bookings.length}</p>
+          <div className="bg-white rounded-2xl p-4 shadow-sm border border-emerald-900/5">
+            <p className="text-xs text-gray-400 font-medium">Total Bookings</p>
+            <p className="text-xl font-extrabold text-gray-900 mt-0.5">{bookings.length}</p>
           </div>
         </div>
 
         {/* Filter Tabs */}
-        <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none animate-fadeInUp">
           {["All", ...STATUS_ORDER].map((s) => (
             <button
               key={s}
               onClick={() => setFilterStatus(s)}
-              className={`text-xs px-3 py-1.5 rounded-full border whitespace-nowrap font-medium transition-colors flex-shrink-0 ${
+              className={`text-xs px-4 py-2 rounded-full border whitespace-nowrap font-semibold transition-all flex-shrink-0 ${
                 filterStatus === s
-                  ? "bg-indigo-600 text-white border-indigo-600"
-                  : "bg-white text-gray-500 border-gray-200"
+                  ? "bg-[#0a7a53] text-white border-[#0a7a53] shadow-sm"
+                  : "bg-white text-gray-600 border-gray-200 hover:bg-[#e6f4ef] hover:border-emerald-200"
               }`}
             >
-              {s} {s !== "All" && counts[s] ? `(${counts[s]})` : ""}
+              {STATUS_CONFIG[s]?.icon} {s} {s !== "All" && counts[s] ? `(${counts[s]})` : ""}
             </button>
           ))}
         </div>
 
-        {/* Bookings */}
+        {/* Bookings Grid — 1 col mobile, 2 col on md+ */}
         {filtered.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-3xl mb-2">📭</p>
-            <p className="text-gray-400 text-sm">No bookings in this category</p>
+          <div className="text-center py-16 bg-white rounded-3xl border border-emerald-900/5 animate-fadeIn">
+            <p className="text-4xl mb-2">📭</p>
+            <p className="text-gray-500 font-semibold">No bookings in this category</p>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 stagger">
             {filtered.map((booking) => {
               const service = services.find((s) => s.id === booking.serviceId);
               if (!service) return null;
@@ -162,32 +160,28 @@ export default function Admin() {
               const nextStatus = NEXT_STATUS[booking.status];
 
               return (
-                <div key={booking.id} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100">
-                  {/* Color strip */}
-                  <div className={`h-1 ${
-                    booking.status === "Confirmed" ? "bg-blue-500" :
-                    booking.status === "Completed" ? "bg-green-500" :
-                    booking.status === "Cancelled" ? "bg-red-400" : "bg-yellow-400"
-                  }`} />
+                <div key={booking.id} className="bg-white rounded-3xl overflow-hidden shadow-sm border border-emerald-900/5 transition-all hover:shadow-md animate-fadeInUp">
+                  {/* Status color strip */}
+                  <div className={`h-1.5 ${config.bar}`} />
 
-                  <div className="p-4">
+                  <div className="p-5">
                     {/* Header */}
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-2">
-                        <div className="w-9 h-9 bg-indigo-50 rounded-xl flex items-center justify-center text-lg">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-11 h-11 bg-[#e6f4ef] rounded-2xl flex items-center justify-center text-xl border border-emerald-100/50">
                           {service.emoji}
                         </div>
                         <div>
-                          <p className="font-semibold text-gray-900 text-sm">{service.name}</p>
-                          <p className="text-xs text-gray-400">#{booking.id.toString().slice(-6)}</p>
+                          <p className="font-bold text-gray-900 text-sm">{service.name}</p>
+                          <p className="text-xs text-gray-400 font-mono">#{booking.id.toString().slice(-6)}</p>
                         </div>
                       </div>
-                      <span className={`text-xs px-2.5 py-1 rounded-full font-semibold ${config.color}`}>
+                      <span className={`text-xs px-3 py-1.5 rounded-full font-bold ${config.color}`}>
                         {config.icon} {booking.status}
                       </span>
                     </div>
 
-                    {/* Customer info */}
+                    {/* Info Grid */}
                     <div className="grid grid-cols-2 gap-2 mb-3">
                       {[
                         ["👤", booking.name],
@@ -195,16 +189,22 @@ export default function Admin() {
                         ["📅", booking.date],
                         ["🕐", booking.timeSlot?.split("–")[0]?.trim()],
                       ].map(([icon, val]) => (
-                        <div key={val} className="bg-gray-50 rounded-lg px-2.5 py-1.5 flex items-center gap-1.5">
+                        <div key={val} className="bg-gray-50 rounded-xl px-3 py-2 flex items-center gap-1.5 border border-gray-100">
                           <span className="text-xs">{icon}</span>
-                          <span className="text-xs text-gray-600 font-medium truncate">{val}</span>
+                          <span className="text-xs text-gray-700 font-semibold truncate">{val}</span>
                         </div>
                       ))}
                     </div>
 
-                    <div className="bg-gray-50 rounded-lg px-2.5 py-1.5 flex items-start gap-1.5 mb-3">
+                    <div className="bg-gray-50 rounded-xl px-3 py-2 flex items-start gap-1.5 mb-4 border border-gray-100">
                       <span className="text-xs mt-0.5">📍</span>
-                      <span className="text-xs text-gray-600">{booking.address}</span>
+                      <span className="text-xs text-gray-600 leading-snug">{booking.address}</span>
+                    </div>
+
+                    {/* Price row */}
+                    <div className="flex items-center justify-between mb-4 px-0.5">
+                      <span className="text-xs text-gray-400 font-medium">Amount</span>
+                      <span className="font-bold text-[#0a7a53] text-sm">₹{service.price}</span>
                     </div>
 
                     {/* Action Buttons */}
@@ -212,7 +212,7 @@ export default function Admin() {
                       {nextStatus && (
                         <button
                           onClick={() => updateStatus(booking.id, nextStatus)}
-                          className="flex-1 bg-indigo-600 text-white text-xs font-bold py-2.5 rounded-xl shadow-sm shadow-indigo-200"
+                          className="flex-1 bg-[#0a7a53] hover:bg-[#086343] text-white text-xs font-bold py-2.5 rounded-xl shadow-sm transition-all active:scale-95"
                         >
                           Mark as {nextStatus} →
                         </button>
@@ -220,7 +220,7 @@ export default function Admin() {
                       {booking.status !== "Cancelled" && booking.status !== "Completed" && (
                         <button
                           onClick={() => cancelBooking(booking.id)}
-                          className="px-3 py-2.5 border border-red-100 text-red-400 text-xs font-semibold rounded-xl hover:bg-red-50"
+                          className="px-4 py-2.5 border border-rose-200 text-rose-500 text-xs font-bold rounded-xl hover:bg-rose-50 transition-all"
                         >
                           Cancel
                         </button>

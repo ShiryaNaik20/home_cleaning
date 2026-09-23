@@ -22,13 +22,9 @@ export default function BookingSuccess() {
   return (
     <div className="bg-[#f2f6f4] min-h-screen pb-24">
       {/* Header with sufficient bottom padding */}
-      <div className="bg-[#0a7a53] text-white px-6 pt-10 pb-16 rounded-b-[2rem] shadow-sm text-center">
+      <div className="bg-[#0a7a53] text-white px-6 pt-10 pb-8 rounded-b-[2rem] shadow-sm text-center">
         <div className="max-w-3xl mx-auto">
-          <div
-            className={`transition-all duration-500 transform ${
-              show ? "scale-100 opacity-100" : "scale-50 opacity-0"
-            }`}
-          >
+          <div className="animate-checkPop">
             <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-4xl mx-auto shadow-md">
               ✅
             </div>
@@ -43,7 +39,7 @@ export default function BookingSuccess() {
       </div>
 
       {/* Main Content Card Container */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 -mt-8">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 mt-8 animate-fadeInUp">
         {/* Booking Details Card */}
         <div className="bg-white rounded-3xl shadow-sm border border-emerald-900/5 overflow-hidden mb-5">
           {/* Service Banner */}

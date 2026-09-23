@@ -86,9 +86,9 @@ export default function BookingForm() {
   if (!service) return null;
 
   return (
-    <div className="bg-[#f2f6f4] min-h-screen pb-36">
+    <div className="bg-[#f2f6f4] min-h-screen pb-36 animate-fadeIn">
       {/* Header */}
-      <div className="bg-[#0a7a53] text-white px-4 pt-6 pb-12 rounded-b-[2.5rem] shadow-md">
+      <div className="bg-[#0a7a53] text-white px-4 pt-6 pb-8 rounded-b-[2.5rem] shadow-md">
         <div className="max-w-3xl mx-auto">
           <button
             onClick={() => navigate(-1)}
@@ -103,9 +103,9 @@ export default function BookingForm() {
         </div>
       </div>
 
-      <div className="max-w-3xl mx-auto px-4 -mt-6 space-y-4">
+      <div className="max-w-3xl mx-auto px-4 mt-8 space-y-4">
         {/* Full Name */}
-        <div className="bg-white rounded-3xl p-5 shadow-sm border border-emerald-900/5">
+        <div className="bg-white rounded-3xl p-5 shadow-sm border border-emerald-900/5 animate-fadeInUp">
           <label className="block text-[11px] font-bold text-gray-400 uppercase tracking-wider mb-2">
             Full Name
           </label>
