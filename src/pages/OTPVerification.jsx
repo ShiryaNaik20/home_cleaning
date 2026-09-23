@@ -90,7 +90,7 @@ export default function OTPVerification() {
       </div>
 
       {/* Card */}
-      <div className="max-w-md mx-auto px-4 -mt-6 animate-fadeInUp">
+      <div className="max-w-md mx-auto px-4 mt-8 animate-fadeInUp">
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-emerald-900/5">
 
           {/* Phone icon */}
