@@ -124,25 +124,20 @@ export default function ServiceListing() {
           </div>
         </button>
 
-        {/* Filters */}
+        {/* Filters & Dropdown */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none animate-fadeInUp">
-          <button
-            onClick={() =>
-              setSortBy((current) =>
-                current === "rating"
-                  ? "price_low"
-                  : current === "price_low"
-                  ? "price_high"
-                  : "rating"
-              )
-            }
-            className="text-xs px-4 py-2 rounded-full border font-semibold transition-all whitespace-nowrap bg-white text-gray-700 border-gray-200 hover:bg-emerald-50 hover:border-emerald-200 shadow-sm font-poppins"
+          {/* Sort Dropdown */}
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="text-xs px-4 py-2 rounded-full border font-semibold transition-all bg-white text-gray-700 border-gray-200 hover:bg-emerald-50 hover:border-emerald-200 shadow-sm font-poppins outline-none cursor-pointer"
           >
-            {sortBy === "rating" && "⭐ Top Rated"}
-            {sortBy === "price_low" && "💰 Price: Low to High"}
-            {sortBy === "price_high" && "💎 Price: High to Low"}
-          </button>
+            <option value="rating">⭐ Top Rated</option>
+            <option value="price_low">💰 Price: Low to High</option>
+            <option value="price_high">💎 Price: High to Low</option>
+          </select>
 
+          {/* Availability Filter */}
           <button
             onClick={() =>
               setFilterAvailability((v) =>
