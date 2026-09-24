@@ -1,7 +1,34 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { services } from "../data/services";
+import { services, INITIAL_REVIEWS } from "../data/services";
 import ServiceCard from "../components/ServiceCard";
+
+/* Helper to compute exact dynamic average rating from local storage */
+function getLiveRating(serviceId, fallbackRating) {
+  if (!serviceId) return Number(fallbackRating || 0);
+
+  let reviews = [];
+  const saved = localStorage.getItem(`reviews_${serviceId}`);
+
+  if (saved) {
+    try {
+      reviews = JSON.parse(saved);
+    } catch (e) {
+      console.error("Failed to parse reviews", e);
+    }
+  } else {
+    reviews = INITIAL_REVIEWS.filter(
+      (r) => String(r.serviceId) === String(serviceId)
+    );
+  }
+
+  if (reviews && reviews.length > 0) {
+    const sum = reviews.reduce((acc, r) => acc + Number(r.rating || 0), 0);
+    return sum / reviews.length;
+  }
+
+  return Number(fallbackRating || 0);
+}
 
 export default function ServiceListing() {
   const [search, setSearch] = useState("");
@@ -11,7 +38,10 @@ export default function ServiceListing() {
   const navigate = useNavigate();
 
   const filtered = useMemo(() => {
-    let list = [...services];
+    let list = services.map((s) => ({
+      ...s,
+      computedRating: getLiveRating(s.id, s.rating),
+    }));
 
     if (search.trim()) {
       list = list.filter((s) =>
@@ -23,12 +53,13 @@ export default function ServiceListing() {
       list = list.filter((s) => s.availability === "Available Today");
     }
 
+    /* Correct numerical sort using computed live ratings */
     if (sortBy === "rating") {
-      list.sort((a, b) => b.rating - a.rating);
+      list.sort((a, b) => b.computedRating - a.computedRating);
     } else if (sortBy === "price_low") {
-      list.sort((a, b) => a.price - b.price);
+      list.sort((a, b) => Number(a.price) - Number(b.price));
     } else if (sortBy === "price_high") {
-      list.sort((a, b) => b.price - a.price);
+      list.sort((a, b) => Number(b.price) - Number(a.price));
     }
 
     return list;
@@ -183,7 +214,13 @@ export default function ServiceListing() {
         ) : (
           <div className="flex flex-col gap-4 stagger">
             {filtered.map((s) => (
-              <ServiceCard key={s.id} service={s} />
+              <ServiceCard
+                key={s.id}
+                service={{
+                  ...s,
+                  rating: s.computedRating.toFixed(1),
+                }}
+              />
             ))}
           </div>
         )}
