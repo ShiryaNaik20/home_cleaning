@@ -68,7 +68,7 @@ src/
 
 ---
 
-## 🔮 What I'd Improve with More Time
+##  What I'd Improve with More Time
 
 1. **Real backend** : Replace localStorage with an API (Node/Express or Laravel) and a proper DB (MySQL / MongoDB) so bookings persist across devices and users.
 2. **Rating aggregation** : Compute average service rating from reviews dynamically and surface it on the listing page; the current "sort by rating" defaults to static order.
@@ -79,9 +79,9 @@ src/
 
 
 
-## 💡 Assumptions Made
+##  Assumptions Made
 
-- A single service category (Home Cleaning) is sufficient to demonstrate the full flow as the assignment asks to "pick ONE."
-- No real SMS/OTP integration needed — the mock OTP `1234` is displayed on-screen per the assignment spec.
+- A single service category (Home Cleaning) is sufficient to demonstrate the full flow.
+- No real SMS/OTP integration needed : the mock OTP `1234` is displayed on-screen per the assignment spec.
 - "Responsive" is interpreted as mobile-first (375px+), matching the target Flutter mobile app context.
-- Auth is mocked (no real user DB) — login simply selects a user/admin role and stores it in localStorage.
+- Auth is mocked (no real user DB) : login simply selects a user/admin role and stores it in localStorage.
