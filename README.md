@@ -1,6 +1,6 @@
 # TidyNest — Home Cleaning Booking Module
 
-A focused mini booking flow built. This is a single-service slice (Home Cleaning) of a super-app — demonstrating end-to-end booking UX, form validation, mock OTP verification, booking management, and a basic admin/ops view.
+A focused mini booking flow built. This is a single-service slice (Home Cleaning) of a super-app demonstrating end-to-end booking UX, form validation, mock OTP verification, booking management, and a basic admin/ops view.
 
 ---
 
@@ -31,14 +31,14 @@ I chose this stack because it's what I'm most productive in and lets me focus on
 ##  Features Built
 
 ### Core
-- **Service Listing** — 6 mock cleaning providers with search, sort (Top Rated / Price Low–High / Price High–Low), and availability filter (Available Today)
-- **Service Detail** — Provider info, what's included, pricing, and reviews; "Book Now" CTA
-- **Booking Form** — Captures name, 10-digit Indian phone (validated with regex), address, date (blocked in the past), and time slot picker. Inline real-time error states on every field.
-- **OTP Verification** — 4-digit input with auto-focus, backspace navigation, 30s resend timer, and loading state on verify. Mock OTP: `1234`.
+- **Service Listing** : 6 mock cleaning providers with search, sort (Top Rated / Price Low–High / Price High–Low), and availability filter (Available Today)
+- **Service Detail** : Provider info, what's included, pricing, and reviews; "Book Now" CTA
+- **Booking Form** : Captures name, 10-digit Indian phone (validated with regex), address, date (blocked in the past), and time slot picker. Inline real-time error states on every field.
+- **OTP Verification** : 4-digit input with auto-focus, backspace navigation, 30s resend timer, and loading state on verify. Mock OTP: `1234`.
 
 ### Nice-to-Have (both completed)
-- **My Bookings** — Lists all bookings with status badges (Confirmed / Completed / Cancelled), a progress stepper, cancel action, and a post-service review flow.
-- **Admin Panel** — Ops view with booking counts by status, filter by status, and the ability to advance booking status (Confirmed → Completed). Role-protected — only accessible when logged in as admin.
+- **My Bookings** : Lists all bookings with status badges (Confirmed / Completed / Cancelled), a progress stepper, cancel action, and a post-service review flow.
+- **Admin Panel** : Ops view with booking counts by status, filter by status, and the ability to advance booking status (Confirmed → Completed). Role-protected : only accessible when logged in as admin.
 
 ---
 
@@ -70,12 +70,12 @@ src/
 
 ## 🔮 What I'd Improve with More Time
 
-1. **Real backend** — Replace localStorage with an API (Node/Express or Laravel) and a proper DB (MySQL / MongoDB) so bookings persist across devices and users.
-2. **Rating aggregation** — Compute average service rating from reviews dynamically and surface it on the listing page; the current "sort by rating" defaults to static order.
-3. **Date/time conflict detection** — Prevent double-booking the same provider on the same slot.
-4. **Push/SMS notifications** — Integrate a real OTP service (Twilio / MSG91) and booking status change notifications.
-5. **Tests** — Add unit tests for the validation logic and component-level tests with React Testing Library.
-6. **Animations polish** — The fade-in CSS animations work well on mobile; with more time I'd refine them for reduced-motion accessibility.
+1. **Real backend** : Replace localStorage with an API (Node/Express or Laravel) and a proper DB (MySQL / MongoDB) so bookings persist across devices and users.
+2. **Rating aggregation** : Compute average service rating from reviews dynamically and surface it on the listing page; the current "sort by rating" defaults to static order.
+3. **Date/time conflict detection** : Prevent double-booking the same provider on the same slot.
+4. **Push/SMS notifications** : Integrate a real OTP service (Twilio / MSG91) and booking status change notifications.
+5. **Tests** : Add unit tests for the validation logic and component-level tests with React Testing Library.
+6. **Animations polish** : The fade-in CSS animations work well on mobile; with more time I'd refine them for reduced-motion accessibility.
 
 
 
